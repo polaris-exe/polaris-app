@@ -14,7 +14,13 @@ import { ApiClientError } from '@/api/api-client';
 import { refreshSessionTokens } from '@/api/session-refresh';
 import { tokenStorage } from '@/config/token-storage';
 
-import { apiGetMe, apiLogin, apiLogout, apiRegister } from './auth-api';
+import {
+  apiDeleteAccount,
+  apiGetMe,
+  apiLogin,
+  apiLogout,
+  apiRegister,
+} from './auth-api';
 import type { OAuthProvider } from './oauth-callback-url';
 import { runOAuthSignIn } from './oauth-sign-in';
 
@@ -34,6 +40,8 @@ interface AuthContextValue {
     provider: OAuthProvider,
   ) => Promise<'signed_in' | 'cancelled'>;
   readonly logout: () => Promise<void>;
+  /** Requires the current password; signs out on success. */
+  readonly deleteAccount: (password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -136,9 +144,28 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     queryClient.clear();
   }, [queryClient]);
 
+  const deleteAccount = useCallback(
+    async (password: string) => {
+      // The server revokes every session, so only local state is left.
+      await apiDeleteAccount(password);
+      await tokenStorage.clear();
+      setUser(null);
+      queryClient.clear();
+    },
+    [queryClient],
+  );
+
   const value = useMemo(
-    () => ({ user, isRestoring, login, register, signInWithOAuth, logout }),
-    [user, isRestoring, login, register, signInWithOAuth, logout],
+    () => ({
+      user,
+      isRestoring,
+      login,
+      register,
+      signInWithOAuth,
+      logout,
+      deleteAccount,
+    }),
+    [user, isRestoring, login, register, signInWithOAuth, logout, deleteAccount],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

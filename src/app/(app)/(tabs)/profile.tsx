@@ -1,14 +1,18 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAuth } from '@/features/auth/auth-context';
+import { useHiddenContent } from '@/features/community/hidden-content-context';
 import { Button } from '@/ui/button';
 import { colors, fontSize, radius, spacing } from '@/ui/theme';
 
 const PLAN_LABELS = { free: 'Free', pro: 'Pro', pro_max: 'Pro Max' } as const;
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { user, logout } = useAuth();
+  const { blockedAuthors, unblockAuthor } = useHiddenContent();
   const [loggingOut, setLoggingOut] = useState(false);
 
   if (!user) return null;
@@ -20,7 +24,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <ScrollView contentContainerStyle={styles.screen}>
       <View style={styles.card}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>
@@ -34,18 +38,45 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      {blockedAuthors.length > 0 ? (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Người dùng đã chặn</Text>
+          {blockedAuthors.map((author) => (
+            <View key={author.user_id} style={styles.blockedRow}>
+              <Text style={styles.blockedName} numberOfLines={1}>
+                {author.display_name || 'Người dùng'}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Bỏ chặn ${author.display_name}`}
+                hitSlop={8}
+                onPress={() => unblockAuthor(author.user_id)}
+              >
+                <Text style={styles.unblock}>Bỏ chặn</Text>
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      ) : null}
+
       <Button
         label="Đăng xuất"
         variant="secondary"
         loading={loggingOut}
         onPress={handleLogout}
       />
-    </View>
+      <Button
+        label="Xoá tài khoản"
+        variant="danger"
+        disabled={loggingOut}
+        onPress={() => router.push('/delete-account')}
+      />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, padding: spacing.lg, gap: spacing.xl },
+  screen: { padding: spacing.lg, gap: spacing.xl },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -69,4 +100,21 @@ const styles = StyleSheet.create({
   name: { color: colors.fg, fontSize: fontSize.lg, fontWeight: '700' },
   email: { color: colors.fgMuted, fontSize: fontSize.sm },
   plan: { color: colors.accentStrong, fontSize: fontSize.xs, fontWeight: '600', marginTop: spacing.xs },
+  section: {
+    padding: spacing.lg,
+    gap: spacing.md,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
+    backgroundColor: colors.surface,
+  },
+  sectionTitle: { color: colors.fgMuted, fontSize: fontSize.sm, fontWeight: '600' },
+  blockedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+  },
+  blockedName: { color: colors.fg, fontSize: fontSize.md, flexShrink: 1 },
+  unblock: { color: colors.accentStrong, fontSize: fontSize.sm, fontWeight: '600' },
 });

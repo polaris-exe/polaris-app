@@ -41,3 +41,8 @@ export async function apiGetMe(): Promise<CurrentUserResponse> {
 export async function apiForgotPassword(email: string): Promise<void> {
   await apiClient.post('/auth/forgot-password', { email });
 }
+
+/** Soft-deletes the account and revokes every session; 401 = wrong password. */
+export async function apiDeleteAccount(password: string): Promise<void> {
+  await apiClient.post('/auth/delete-account', { password });
+}

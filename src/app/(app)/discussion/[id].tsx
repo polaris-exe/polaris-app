@@ -1,21 +1,29 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { toUserMessage } from '@/api/api-error-message';
+import { useAuth } from '@/features/auth/auth-context';
 import { CATEGORY_LABELS, formatRelativeTime } from '@/features/community/community-format';
 import { BookmarkButton } from '@/features/community/components/bookmark-button';
 import { DiscussionMarkdown } from '@/features/community/components/discussion-markdown';
+import { DiscussionMenuButton } from '@/features/community/components/discussion-menu-button';
 import { VoteControl } from '@/features/community/components/vote-control';
+import { useHiddenContent } from '@/features/community/hidden-content-context';
 import { useDiscussionActions } from '@/features/community/hooks/use-discussion-actions';
 import { useDiscussionDetail } from '@/features/community/hooks/use-discussion-detail';
+import { useDiscussionMenu } from '@/features/community/hooks/use-discussion-menu';
 import { Chip } from '@/ui/chip';
 import { LoadingState, MessageState } from '@/ui/screen-states';
 import { colors, fontSize, radius, spacing } from '@/ui/theme';
 
 export default function DiscussionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const { user } = useAuth();
   const query = useDiscussionDetail(id);
   const { vote, toggleBookmark } = useDiscussionActions();
+  const { isHidden } = useHiddenContent();
+  const openMenu = useDiscussionMenu();
   const discussion = query.data;
 
   if (!discussion) {
@@ -33,15 +41,35 @@ export default function DiscussionDetailScreen() {
     );
   }
 
+  if (isHidden(discussion)) {
+    return (
+      <MessageState
+        title="Bạn đã ẩn bài viết này"
+        message="Bài viết bị ẩn vì bạn đã báo cáo nó hoặc chặn tác giả."
+        actionLabel="Quay lại"
+        onAction={() => router.back()}
+      />
+    );
+  }
+
+  const isOwnPost = discussion.author.user_id === user?.id;
+
   return (
     <>
       <Stack.Screen
         options={{
           headerRight: () => (
-            <BookmarkButton
-              bookmarked={discussion.is_bookmarked}
-              onPress={() => toggleBookmark(discussion)}
-            />
+            <View style={styles.headerActions}>
+              <BookmarkButton
+                bookmarked={discussion.is_bookmarked}
+                onPress={() => toggleBookmark(discussion)}
+              />
+              {isOwnPost ? null : (
+                <DiscussionMenuButton
+                  onPress={() => openMenu(discussion, () => router.back())}
+                />
+              )}
+            </View>
           ),
         }}
       />
@@ -101,6 +129,7 @@ export default function DiscussionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
   content: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing.xxl },
   metaRow: {
     flexDirection: 'row',

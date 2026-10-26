@@ -12,21 +12,28 @@ import {
 
 import type { DiscussionResponse } from '@/contracts';
 import { toUserMessage } from '@/api/api-error-message';
+import { useAuth } from '@/features/auth/auth-context';
 import { DiscussionCard } from '@/features/community/components/discussion-card';
 import { FeedFilters } from '@/features/community/components/feed-filters';
 import type { DiscussionFilters } from '@/features/community/discussion-query';
+import { useHiddenContent } from '@/features/community/hidden-content-context';
 import { useDiscussionActions } from '@/features/community/hooks/use-discussion-actions';
 import { useDiscussionFeed } from '@/features/community/hooks/use-discussion-feed';
+import { useDiscussionMenu } from '@/features/community/hooks/use-discussion-menu';
 import { usePopularTags } from '@/features/community/hooks/use-discussion-meta';
 import { LoadingState, MessageState } from '@/ui/screen-states';
 import { colors, radius, spacing } from '@/ui/theme';
 
 export default function CommunityFeedScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const [filters, setFilters] = useState<DiscussionFilters>({ sort: 'recent' });
   const feed = useDiscussionFeed(filters);
   const popularTags = usePopularTags();
   const { vote, toggleBookmark } = useDiscussionActions();
+  const { isHidden } = useHiddenContent();
+  const openMenu = useDiscussionMenu();
+  const discussions = feed.discussions.filter((discussion) => !isHidden(discussion));
 
   const openDiscussion = useCallback(
     (discussion: DiscussionResponse) =>
@@ -49,7 +56,7 @@ export default function CommunityFeedScreen() {
   return (
     <View style={styles.screen}>
       <FlatList
-        data={feed.discussions}
+        data={discussions}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <DiscussionCard
@@ -58,6 +65,7 @@ export default function CommunityFeedScreen() {
             onVote={vote}
             onToggleBookmark={toggleBookmark}
             onTagPress={filterByTag}
+            onOpenMenu={item.author.user_id === user?.id ? undefined : openMenu}
           />
         )}
         ListHeaderComponent={header}

@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -23,8 +24,17 @@ interface GoogleSignInButtonProps {
 /**
  * "Tiếp tục với Google" + divider. Works for both login and register: the
  * backend creates the account on first Google sign-in.
+ *
+ * Hidden on iOS: the App Store requires Sign in with Apple next to any
+ * third-party login, which the backend does not support yet, so iOS offers
+ * email/password only.
  */
-export function GoogleSignInButton({ disabled = false }: GoogleSignInButtonProps) {
+export function GoogleSignInButton(props: GoogleSignInButtonProps) {
+  if (Platform.OS === 'ios') return null;
+  return <GoogleSignInSection {...props} />;
+}
+
+function GoogleSignInSection({ disabled = false }: GoogleSignInButtonProps) {
   const { signInWithOAuth } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

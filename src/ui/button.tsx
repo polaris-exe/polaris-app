@@ -8,7 +8,7 @@ import {
 
 import { colors, fontSize, radius, spacing } from './theme';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
 interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
   readonly label: string;
@@ -24,7 +24,12 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
-  const textColor = variant === 'primary' ? colors.accentFg : colors.fg;
+  const textColor =
+    variant === 'primary'
+      ? colors.accentFg
+      : variant === 'danger'
+        ? colors.danger
+        : colors.fg;
 
   return (
     <Pressable
@@ -63,6 +68,11 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   ghost: { backgroundColor: 'transparent' },
+  danger: {
+    backgroundColor: colors.dangerSoft,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.danger,
+  },
   pressed: { opacity: 0.8 },
   disabled: { opacity: 0.5 },
   label: { fontSize: fontSize.md, fontWeight: '600' },

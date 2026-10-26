@@ -7,6 +7,7 @@ import { colors, fontSize, radius, spacing } from '@/ui/theme';
 
 import { CATEGORY_LABELS, formatRelativeTime } from '../community-format';
 import { BookmarkButton } from './bookmark-button';
+import { DiscussionMenuButton } from './discussion-menu-button';
 import { VoteControl } from './vote-control';
 
 interface DiscussionCardProps {
@@ -15,6 +16,8 @@ interface DiscussionCardProps {
   readonly onVote: (discussion: DiscussionResponse, pressed: 'up' | 'down') => void;
   readonly onToggleBookmark: (discussion: DiscussionResponse) => void;
   readonly onTagPress: (tag: string) => void;
+  /** Report/block menu; omitted on the viewer's own posts. */
+  readonly onOpenMenu?: (discussion: DiscussionResponse) => void;
 }
 
 export const DiscussionCard = memo(function DiscussionCard({
@@ -23,6 +26,7 @@ export const DiscussionCard = memo(function DiscussionCard({
   onVote,
   onToggleBookmark,
   onTagPress,
+  onOpenMenu,
 }: DiscussionCardProps) {
   return (
     <Pressable
@@ -82,6 +86,11 @@ export const DiscussionCard = memo(function DiscussionCard({
               bookmarked={discussion.is_bookmarked}
               onPress={() => onToggleBookmark(discussion)}
             />
+            {onOpenMenu ? (
+              <View style={styles.menu}>
+                <DiscussionMenuButton onPress={() => onOpenMenu(discussion)} />
+              </View>
+            ) : null}
           </View>
         </View>
       </View>
@@ -126,5 +135,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   footerRight: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  menu: { marginLeft: spacing.sm },
   footerText: { color: colors.fgSubtle, fontSize: fontSize.xs, flexShrink: 1 },
 });
