@@ -36,7 +36,27 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-system-ui",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#8b5cf6",
+          "defaultChannel": "default"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Polaris cần truy cập thư viện ảnh để bạn chọn ảnh đại diện và ảnh đính kèm bài viết.",
+          "cameraPermission": "Polaris cần dùng camera để bạn chụp ảnh đại diện và ảnh đính kèm bài viết.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-image",
+      "expo-sqlite",
+      "expo-localization"
     ],
     "scheme": "polaris",
     "backgroundColor": "#0c0c0f",
