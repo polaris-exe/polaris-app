@@ -14,6 +14,9 @@ export default function AppLayout() {
           headerStyle: { backgroundColor: colors.bg },
           headerTintColor: colors.fg,
           headerShadowVisible: false,
+          // iOS labels the back button with the previous route's title, which
+          // for the tab group is the raw "(tabs)" segment; show the chevron only.
+          headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: colors.bg },
         }}
       >
