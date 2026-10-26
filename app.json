@@ -55,7 +55,6 @@
         }
       ],
       "expo-image",
-      "@sentry/react-native",
       "expo-sqlite",
       "expo-localization"
     ],

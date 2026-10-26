@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -6,7 +5,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { initCrashReporting } from '@/config/crash-reporting';
 import { queryClient } from '@/config/query-client';
 import { UpdateReadyBanner } from '@/features/app-updates/update-ready-banner';
 import { AuthProvider, useAuth } from '@/features/auth/auth-context';
@@ -16,9 +14,7 @@ import { colors } from '@/ui/theme';
 // never see the login screen flash before landing in the app.
 void SplashScreen.preventAutoHideAsync();
 
-initCrashReporting();
-
-function RootLayout() {
+export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
@@ -32,8 +28,6 @@ function RootLayout() {
     </GestureHandlerRootView>
   );
 }
-
-export default Sentry.wrap(RootLayout);
 
 function RootNavigator() {
   const { user, isRestoring } = useAuth();
