@@ -7,4 +7,6 @@ export const appEnv = {
     production: !__DEV__,
   }),
   requestIdHeader: 'x-request-id',
+  // Empty or unset keeps crash reporting off.
+  sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN || undefined,
 } as const;
