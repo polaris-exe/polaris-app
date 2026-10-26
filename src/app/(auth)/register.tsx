@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { toUserMessage } from '@/api/api-error-message';
+import { openLegalPage } from '@/config/legal-urls';
 import { useAuth } from '@/features/auth/auth-context';
 import {
   PASSWORD_MIN_LENGTH,
@@ -135,6 +136,25 @@ export default function RegisterScreen() {
         onSubmitEditing={handleSubmit}
       />
       <FormErrorBanner message={formError} />
+      <Text style={styles.muted}>
+        Bằng việc đăng ký, bạn đồng ý với{' '}
+        <Text
+          accessibilityRole="link"
+          style={styles.link}
+          onPress={() => openLegalPage('terms')}
+        >
+          Điều khoản sử dụng
+        </Text>{' '}
+        và{' '}
+        <Text
+          accessibilityRole="link"
+          style={styles.link}
+          onPress={() => openLegalPage('privacy')}
+        >
+          Chính sách quyền riêng tư
+        </Text>{' '}
+        của Polaris.
+      </Text>
       <Button label="Đăng ký" loading={submitting} onPress={handleSubmit} />
       <GoogleSignInButton disabled={submitting} />
     </AuthScreenLayout>

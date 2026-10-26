@@ -1,7 +1,9 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { openLegalPage } from '@/config/legal-urls';
 import { useAuth } from '@/features/auth/auth-context';
 import { useHiddenContent } from '@/features/community/hidden-content-context';
 import { Button } from '@/ui/button';
@@ -59,6 +61,18 @@ export default function ProfileScreen() {
         </View>
       ) : null}
 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Thông tin</Text>
+        <LinkRow
+          label="Chính sách quyền riêng tư"
+          onPress={() => openLegalPage('privacy')}
+        />
+        <LinkRow
+          label="Điều khoản sử dụng"
+          onPress={() => openLegalPage('terms')}
+        />
+      </View>
+
       <Button
         label="Đăng xuất"
         variant="secondary"
@@ -72,6 +86,25 @@ export default function ProfileScreen() {
         onPress={() => router.push('/delete-account')}
       />
     </ScrollView>
+  );
+}
+
+function LinkRow({
+  label,
+  onPress,
+}: {
+  readonly label: string;
+  readonly onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="link"
+      onPress={onPress}
+      style={({ pressed }) => [styles.linkRow, pressed && styles.pressed]}
+    >
+      <Text style={styles.linkLabel}>{label}</Text>
+      <Ionicons name="open-outline" size={16} color={colors.fgSubtle} />
+    </Pressable>
   );
 }
 
@@ -117,4 +150,12 @@ const styles = StyleSheet.create({
   },
   blockedName: { color: colors.fg, fontSize: fontSize.md, flexShrink: 1 },
   unblock: { color: colors.accentStrong, fontSize: fontSize.sm, fontWeight: '600' },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 32,
+  },
+  linkLabel: { color: colors.fg, fontSize: fontSize.md },
+  pressed: { opacity: 0.6 },
 });
