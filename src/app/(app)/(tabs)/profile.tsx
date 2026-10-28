@@ -9,8 +9,6 @@ import { useHiddenContent } from '@/features/community/hidden-content-context';
 import { Button } from '@/ui/button';
 import { colors, fontSize, radius, spacing } from '@/ui/theme';
 
-const PLAN_LABELS = { free: 'Free', pro: 'Pro', pro_max: 'Pro Max' } as const;
-
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -36,7 +34,6 @@ export default function ProfileScreen() {
         <View style={styles.info}>
           <Text style={styles.name}>{user.display_name}</Text>
           <Text style={styles.email}>{user.email}</Text>
-          <Text style={styles.plan}>Gói {PLAN_LABELS[user.plan]}</Text>
         </View>
       </View>
 
@@ -132,7 +129,6 @@ const styles = StyleSheet.create({
   info: { flex: 1, gap: 2 },
   name: { color: colors.fg, fontSize: fontSize.lg, fontWeight: '700' },
   email: { color: colors.fgMuted, fontSize: fontSize.sm },
-  plan: { color: colors.accentStrong, fontSize: fontSize.xs, fontWeight: '600', marginTop: spacing.xs },
   section: {
     padding: spacing.lg,
     gap: spacing.md,

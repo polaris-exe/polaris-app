@@ -75,7 +75,7 @@ export default function RegisterScreen() {
   return (
     <AuthScreenLayout
       title="Tạo tài khoản"
-      subtitle="Học lập trình bằng cách xây dựng dự án thật, có chấm code tự động."
+      subtitle="Tham gia cộng đồng Polaris để hỏi đáp và chia sẻ kinh nghiệm lập trình."
       footer={
         <Text style={styles.muted}>
           Đã có tài khoản?{' '}

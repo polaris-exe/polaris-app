@@ -59,7 +59,7 @@ export default function LoginScreen() {
   return (
     <AuthScreenLayout
       title="Đăng nhập"
-      subtitle="Tiếp tục hành trình học backend bằng dự án thật."
+      subtitle="Quay lại thảo luận cùng cộng đồng Polaris."
       footer={
         <>
           <Link href="/forgot-password" style={styles.link}>
